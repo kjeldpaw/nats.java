@@ -13,6 +13,7 @@
 
 package io.nats.client;
 
+import io.nats.client.support.RandomUtils;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -27,11 +28,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.*;
 import java.util.Arrays;
+import java.util.Random;
 
 import static io.nats.client.support.Encoding.base32Decode;
 import static io.nats.client.support.Encoding.base32Encode;
-import static io.nats.client.support.RandomUtils.PRAND;
-import static io.nats.client.support.RandomUtils.SRAND;
 
 class DecodedSeed {
     int prefix;
@@ -174,7 +174,6 @@ public class NKey {
     private static final int ED25519_PUBLIC_KEYSIZE = 32;
     private static final int ED25519_PRIVATE_KEYSIZE = 64;
     private static final int ED25519_SEED_SIZE = 32;
-    private static final EdDSANamedCurveSpec ed25519 = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
 
     // XModem CRC based on the go version of NKeys
     private final static int[] crc16table = { 0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108,
@@ -339,10 +338,10 @@ public class NKey {
     private static NKey createPair(Type type, SecureRandom random)
             throws IOException, NoSuchProviderException, NoSuchAlgorithmException {
         if (random == null) {
-            random = SRAND;
+            random = new SecureRandom();
         }
 
-        byte[] seed = new byte[NKey.ed25519.getCurve().getField().getb() / 8];
+        byte[] seed = new byte[getEd25519().getCurve().getField().getb() / 8];
         random.nextBytes(seed);
 
         return createPair(type, seed);
@@ -350,9 +349,9 @@ public class NKey {
 
     private static NKey createPair(Type type, byte[] seed)
             throws IOException, NoSuchProviderException, NoSuchAlgorithmException {
-        EdDSAPrivateKeySpec privKeySpec = new EdDSAPrivateKeySpec(seed, NKey.ed25519);
+        EdDSAPrivateKeySpec privKeySpec = new EdDSAPrivateKeySpec(seed, getEd25519());
         EdDSAPrivateKey privKey = new EdDSAPrivateKey(privKeySpec);
-        EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(privKey.getA(), NKey.ed25519);
+        EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(privKey.getA(), getEd25519());
         EdDSAPublicKey pubKey = new EdDSAPublicKey(pubKeySpec);
         byte[] pubBytes = pubKey.getAbyte();
 
@@ -558,14 +557,16 @@ public class NKey {
      */
     public void clear() {
         if (privateKeyAsSeed != null) {
+            Random random = RandomUtils.getRandom();
             for (int i=0; i< privateKeyAsSeed.length ; i++) {
-                privateKeyAsSeed[i] = (char)(PRAND.nextInt(26) + 'a');
+                privateKeyAsSeed[i] = (char)(random.nextInt(26) + 'a');
             }
             Arrays.fill(privateKeyAsSeed, '\0');
         }
         if (publicKey != null) {
+            Random random = RandomUtils.getRandom();
             for (int i=0; i< publicKey.length ; i++) {
-                publicKey[i] = (char)(PRAND.nextInt(26) + 'a');
+                publicKey[i] = (char)(random.nextInt(26) + 'a');
             }
             Arrays.fill(publicKey, '\0');
         }
@@ -641,9 +642,9 @@ public class NKey {
         System.arraycopy(decoded.bytes, 0, seedBytes, 0, seedBytes.length);
         System.arraycopy(decoded.bytes, seedBytes.length, pubBytes, 0, pubBytes.length);
 
-        EdDSAPrivateKeySpec privKeySpec = new EdDSAPrivateKeySpec(seedBytes, NKey.ed25519);
+        EdDSAPrivateKeySpec privKeySpec = new EdDSAPrivateKeySpec(seedBytes, getEd25519());
         EdDSAPrivateKey privKey = new EdDSAPrivateKey(privKeySpec);
-        EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(pubBytes, NKey.ed25519);
+        EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(pubBytes, getEd25519());
         EdDSAPublicKey pubKey = new EdDSAPublicKey(pubKeySpec);
 
         return new KeyPair(pubKey, privKey);
@@ -666,7 +667,7 @@ public class NKey {
      * @throws IOException              if there is a problem reading the data
      */
     public byte[] sign(byte[] input) throws GeneralSecurityException, IOException {
-        Signature sgr = new EdDSAEngine(MessageDigest.getInstance(NKey.ed25519.getHashAlgorithm()));
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance(getEd25519().getHashAlgorithm()));
         PrivateKey sKey = getKeyPair().getPrivate();
 
         sgr.initSign(sKey);
@@ -686,7 +687,7 @@ public class NKey {
      * @throws IOException              if there is a problem reading the data
      */
     public boolean verify(byte[] input, byte[] signature) throws GeneralSecurityException, IOException {
-        Signature sgr = new EdDSAEngine(MessageDigest.getInstance(NKey.ed25519.getHashAlgorithm()));
+        Signature sgr = new EdDSAEngine(MessageDigest.getInstance(getEd25519().getHashAlgorithm()));
         PublicKey sKey = null;
 
         if (privateKeyAsSeed != null) {
@@ -694,7 +695,7 @@ public class NKey {
         } else {
             char[] encodedPublicKey = getPublicKey();
             byte[] decodedPublicKey = decode(this.type, encodedPublicKey, false);
-            EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(decodedPublicKey, NKey.ed25519);
+            EdDSAPublicKeySpec pubKeySpec = new EdDSAPublicKeySpec(decodedPublicKey, getEd25519());
             sKey = new EdDSAPublicKey(pubKeySpec);
         }
 
@@ -736,6 +737,10 @@ public class NKey {
             result = 31 * result + Arrays.hashCode(this.privateKeyAsSeed);
         }
         return result;
+    }
+
+    private static EdDSANamedCurveSpec getEd25519() {
+        return EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
     }
 
 }

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static io.nats.client.PushSubscribeOptions.DEFAULT_PUSH_OPTS;
 import static io.nats.client.impl.MessageManager.ManageResult;
 import static io.nats.client.support.NatsJetStreamClientError.*;
 import static io.nats.client.support.NatsRequestCompletableFuture.CancelAction;
@@ -260,7 +259,7 @@ public class NatsJetStream extends NatsJetStreamImpl implements JetStream {
             validateNotSupplied(userCC.getDeliverSubject(), JsSubPullCantHaveDeliverSubject);
         }
         else {
-            so = pushSubscribeOptions == null ? DEFAULT_PUSH_OPTS : pushSubscribeOptions;
+            so = pushSubscribeOptions == null ? new PushSubscribeOptions.Builder().build() : pushSubscribeOptions;
             stream = so.getStream(); // might be null, that's ok (see directBind)
 
             userCC = so.getConsumerConfiguration();

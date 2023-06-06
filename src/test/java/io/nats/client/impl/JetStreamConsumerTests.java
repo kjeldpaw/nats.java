@@ -197,7 +197,7 @@ public class JetStreamConsumerTests extends JetStreamTestBase {
         public final CountDownLatch latch;
 
         public PullHeartbeatErrorSimulator(NatsConnection conn, boolean syncMode, CountDownLatch latch) {
-            super(conn, PullSubscribeOptions.DEFAULT_PULL_OPTS, syncMode);
+            super(conn, new PullSubscribeOptions.Builder().build(), syncMode);
             this.latch = latch;
         }
 
@@ -243,7 +243,7 @@ public class JetStreamConsumerTests extends JetStreamTestBase {
             validate(sub, testHandler, latch, d);
 
             latch = setupPulLFactory(js);
-            sub = js.subscribe(SUBJECT, PullSubscribeOptions.DEFAULT_PULL_OPTS);
+            sub = js.subscribe(SUBJECT, new PullSubscribeOptions.Builder().build());
             sub.pull(PullRequestOptions.builder(1).idleHeartbeat(100).expiresIn(2000).build());
             validate(sub, testHandler, latch, null);
         });

@@ -1,4 +1,4 @@
-![NATS](../../../../../../../src/main/javadoc/images/large-logo.png)
+![NATS](../../../../../javadoc/images/large-logo.png)
 
 # JetStream Multi Tool
 

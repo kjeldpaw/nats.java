@@ -20,8 +20,10 @@ import java.util.Random;
 public abstract class RandomUtils {
     private RandomUtils() {}  /* ensures cannot be constructed */
 
-    public static final SecureRandom SRAND = new SecureRandom();
-    public static final Random PRAND = new Random(bytesToLong(SRAND.generateSeed(8))); // seed with 8 bytes (64 bits)
+    public static final Random getRandom() {
+        SecureRandom secureRandom = new SecureRandom();
+        return new Random(bytesToLong(secureRandom.generateSeed(8))); // seed with 8 bytes (64 bits)
+    }
 
     public static long nextLong(Random rng, long maxValue) {
         // error checking and 2^x checking removed for simplicity.

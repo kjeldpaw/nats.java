@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.nats.client.BaseConsumeOptions.*;
+import static io.nats.client.JetStreamOptions.defaultOptions;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SimplificationTests extends JetStreamTestBase {
@@ -347,12 +348,12 @@ public class SimplificationTests extends JetStreamTestBase {
 
             // Stream[Context]
             StreamContext sctx1 = nc.streamContext(STREAM);
-            nc.streamContext(STREAM, JetStreamOptions.DEFAULT_JS_OPTIONS);
+            nc.streamContext(STREAM, defaultOptions());
             js.streamContext(STREAM);
 
             // Consumer[Context]
             ConsumerContext cctx1 = nc.consumerContext(STREAM, name(1));
-            ConsumerContext cctx2 = nc.consumerContext(STREAM, name(2), JetStreamOptions.DEFAULT_JS_OPTIONS);
+            ConsumerContext cctx2 = nc.consumerContext(STREAM, name(2), defaultOptions());
             ConsumerContext cctx3 = js.consumerContext(STREAM, name(3));
             ConsumerContext cctx4 = sctx1.consumerContext(name(4));
             ConsumerContext cctx5 = sctx1.addConsumer(ConsumerConfiguration.builder().durable(name(5)).build());

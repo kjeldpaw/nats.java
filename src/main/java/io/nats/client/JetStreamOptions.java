@@ -27,8 +27,6 @@ import static io.nats.client.support.Validator.validatePrefixOrDomain;
 public class JetStreamOptions {
 
     public static final Duration DEFAULT_TIMEOUT = Options.DEFAULT_CONNECTION_TIMEOUT;
-    public static final JetStreamOptions DEFAULT_JS_OPTIONS = new Builder().build();
-
     private final String jsPrefix;
     private final Duration requestTimeout;
     private final boolean publishNoAck;
@@ -112,7 +110,7 @@ public class JetStreamOptions {
      * @return the configuration
      */
     public static JetStreamOptions defaultOptions() {
-        return DEFAULT_JS_OPTIONS;
+        return new Builder().build();
     }
 
     /**

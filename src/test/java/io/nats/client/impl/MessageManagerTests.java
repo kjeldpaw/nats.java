@@ -531,7 +531,7 @@ public class MessageManagerTests extends JetStreamTestBase {
     }
 
     private PullMessageManager getPullManager(Connection conn, NatsJetStreamSubscription sub, boolean syncMode) {
-        PullMessageManager manager = new PullMessageManager((NatsConnection) conn, PullSubscribeOptions.DEFAULT_PULL_OPTS, syncMode);
+        PullMessageManager manager = new PullMessageManager((NatsConnection) conn, new PullSubscribeOptions.Builder().build(), syncMode);
         if (sub != null) {
             manager.startup(sub);
         }
@@ -617,7 +617,7 @@ public class MessageManagerTests extends JetStreamTestBase {
     private static NatsJetStreamSubscription genericPullSub(Connection nc) throws IOException, JetStreamApiException {
         String subject = genericSub(nc);
         JetStream js = nc.jetStream();
-        return (NatsJetStreamSubscription) js.subscribe(subject, PullSubscribeOptions.DEFAULT_PULL_OPTS);
+        return (NatsJetStreamSubscription) js.subscribe(subject, new PullSubscribeOptions.Builder().build());
     }
 
     private static String genericSub(Connection nc) throws IOException, JetStreamApiException {
@@ -637,7 +637,7 @@ public class MessageManagerTests extends JetStreamTestBase {
 
     static class TestMessageManager extends MessageManager {
         public TestMessageManager() {
-            super(null, PushSubscribeOptions.DEFAULT_PUSH_OPTS, true);
+            super(null, new PushSubscribeOptions.Builder().build(), true);
         }
 
         @Override

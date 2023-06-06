@@ -181,7 +181,7 @@ If you are using the 1.x version of java-nats and don't want to upgrade to 2.0.0
 
 Sending and receiving with NATS is as simple as connecting to the nats-server and publishing or subscribing for messages.
 
-Please see the examples in this project. The [Examples Readme](src/examples/java/io/nats/examples/README.md) is a good place to start.
+Please see the examples in this project. The [Examples Readme](src/main/java/io/nats/examples/README.md) is a good place to start.
 
 There are also examples in the [java-nats-examples](https://github.com/nats-io/java-nats-examples) repo. 
 
@@ -707,7 +707,7 @@ NATS supports TLS 1.2. The server can be configured to verify client certificate
     Connection nc = Nats.connect(options);
     ```
 
-If you want to try out these techniques, take a look at the [README.md](src/examples/java/io/nats/examples/README.md) for instructions.
+If you want to try out these techniques, take a look at the [README.md](src/main/java/io/nats/examples/README.md) for instructions.
 
 Also, here are some places in the code that may help
 https://github.com/nats-io/nats.java/blob/main/src/main/java/io/nats/client/support/SSLUtils.java

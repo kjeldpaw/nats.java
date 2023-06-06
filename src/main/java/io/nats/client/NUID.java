@@ -15,6 +15,11 @@
 
 package io.nats.client;
 
+import io.nats.client.support.RandomUtils;
+
+import java.security.SecureRandom;
+import java.util.Random;
+
 import static io.nats.client.support.RandomUtils.*;
 
 /**
@@ -70,8 +75,9 @@ public final class NUID {
      */
     public NUID() {
         // Generate a cryto random int, 0 <= val < max to seed pseudorandom
-        seq = nextLong(PRAND, maxSeq);
-        inc = minInc + nextLong(PRAND, maxInc - minInc);
+        Random random = RandomUtils.getRandom();
+        seq = nextLong(random, maxSeq);
+        inc = minInc + nextLong(random, maxInc - minInc);
         pre = new char[preLen];
         for (int i = 0; i < preLen; i++) {
             pre[i] = '0';
@@ -114,8 +120,9 @@ public final class NUID {
 
     // Resets the sequntial portion of the NUID
     void resetSequential() {
-        seq = nextLong(PRAND, maxSeq);
-        inc = minInc + nextLong(PRAND, maxInc - minInc);
+        Random random = RandomUtils.getRandom();
+        seq = nextLong(random, maxSeq);
+        inc = minInc + nextLong(random, maxInc - minInc);
     }
 
     /*
@@ -127,7 +134,8 @@ public final class NUID {
         byte[] cb = new byte[preLen];
 
         // Use SecureRandom for prefix only
-        SRAND.nextBytes(cb);
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(cb);
 
         for (int i = 0; i < preLen; i++) {
             pre[i] = digits[(cb[i] & 0xFF) % base];

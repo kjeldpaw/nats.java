@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static io.nats.client.JetStreamOptions.DEFAULT_JS_OPTIONS;
+import static io.nats.client.JetStreamOptions.defaultOptions;
 import static io.nats.client.api.KeyValuePurgeOptions.DEFAULT_THRESHOLD_MILLIS;
 import static io.nats.client.api.KeyValueWatchOption.*;
 import static io.nats.client.support.NatsConstants.DOT;
@@ -50,7 +50,7 @@ public class KeyValueTests extends JetStreamTestBase {
         runInJsServer(nc -> {
             // get the kv management context
             KeyValueManagement kvm = nc.keyValueManagement();
-            nc.keyValueManagement(KeyValueOptions.builder(DEFAULT_JS_OPTIONS).build()); // coverage
+            nc.keyValueManagement(KeyValueOptions.builder(defaultOptions()).build()); // coverage
 
             // create the bucket
             KeyValueConfiguration kvc = KeyValueConfiguration.builder()
@@ -69,7 +69,7 @@ public class KeyValueTests extends JetStreamTestBase {
             status = kv.getStatus();
             assertInitialStatus(status);
 
-            KeyValue kv2 = nc.keyValue(BUCKET, KeyValueOptions.builder(DEFAULT_JS_OPTIONS).build()); // coverage
+            KeyValue kv2 = nc.keyValue(BUCKET, KeyValueOptions.builder(defaultOptions()).build()); // coverage
             assertEquals(BUCKET, kv2.getBucketName());
             assertInitialStatus(kv2.getStatus());
 
@@ -1168,11 +1168,11 @@ public class KeyValueTests extends JetStreamTestBase {
 
     @Test
     public void testKeyValueOptionsBuilderCoverage() {
-        assertKvo(DEFAULT_JS_OPTIONS, KeyValueOptions.builder().build());
-        assertKvo(DEFAULT_JS_OPTIONS, KeyValueOptions.builder().jetStreamOptions(DEFAULT_JS_OPTIONS).build());
-        assertKvo(DEFAULT_JS_OPTIONS, KeyValueOptions.builder((KeyValueOptions) null).build());
-        assertKvo(DEFAULT_JS_OPTIONS, KeyValueOptions.builder(KeyValueOptions.builder().build()).build());
-        assertKvo(DEFAULT_JS_OPTIONS, KeyValueOptions.builder(DEFAULT_JS_OPTIONS).build());
+        assertKvo(defaultOptions(), KeyValueOptions.builder().build());
+        assertKvo(defaultOptions(), KeyValueOptions.builder().jetStreamOptions(defaultOptions()).build());
+        assertKvo(defaultOptions(), KeyValueOptions.builder((KeyValueOptions) null).build());
+        assertKvo(defaultOptions(), KeyValueOptions.builder(KeyValueOptions.builder().build()).build());
+        assertKvo(defaultOptions(), KeyValueOptions.builder(defaultOptions()).build());
 
         KeyValueOptions kvo = KeyValueOptions.builder().jsPrefix("prefix").build();
         assertEquals("prefix.", kvo.getJetStreamOptions().getPrefix());

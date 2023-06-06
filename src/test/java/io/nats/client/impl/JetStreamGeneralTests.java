@@ -24,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
 import static io.nats.client.api.ConsumerConfiguration.*;
@@ -582,13 +583,15 @@ public class JetStreamGeneralTests extends JetStreamTestBase {
     }
 
     private void subscribeOk(JetStream js, JetStreamManagement jsm, String fs, String ss) throws IOException, JetStreamApiException {
-        int i = RandomUtils.PRAND.nextInt(); // just want a unique number
+        Random random = RandomUtils.getRandom();
+        int i = random.nextInt(); // just want a unique number
         setupConsumer(jsm, i, fs);
         unsubscribeEnsureNotBound(js.subscribe(ss, builder().durable(durable(i)).buildPushSubscribeOptions()));
     }
 
     private void subscribeEx(JetStream js, JetStreamManagement jsm, String fs, String ss) throws IOException, JetStreamApiException {
-        int i = RandomUtils.PRAND.nextInt(); // just want a unique number
+        Random random = RandomUtils.getRandom();
+        int i = random.nextInt(); // just want a unique number
         setupConsumer(jsm, i, fs);
         IllegalArgumentException iae = assertThrows(IllegalArgumentException.class,
             () -> js.subscribe(ss, builder().durable(durable(i)).buildPushSubscribeOptions()));

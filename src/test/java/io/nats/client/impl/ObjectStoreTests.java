@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.nats.client.JetStreamOptions.DEFAULT_JS_OPTIONS;
+import static io.nats.client.JetStreamOptions.defaultOptions;
 import static io.nats.client.api.ObjectStoreWatchOption.IGNORE_DELETE;
 import static io.nats.client.support.NatsJetStreamClientError.*;
 import static io.nats.client.support.NatsObjectStoreUtil.DEFAULT_CHUNK_SIZE;
@@ -39,7 +39,7 @@ public class ObjectStoreTests extends JetStreamTestBase {
     public void testWorkflow() throws Exception {
         runInJsServer(nc -> {
             ObjectStoreManagement osm = nc.objectStoreManagement();
-            nc.objectStoreManagement(ObjectStoreOptions.builder(DEFAULT_JS_OPTIONS).build()); // coverage
+            nc.objectStoreManagement(ObjectStoreOptions.builder(defaultOptions()).build()); // coverage
 
             // create the bucket
             ObjectStoreConfiguration osc = ObjectStoreConfiguration.builder(BUCKET)
@@ -61,7 +61,7 @@ public class ObjectStoreTests extends JetStreamTestBase {
 
             // put some objects into the stores
             ObjectStore os = nc.objectStore(BUCKET);
-            nc.objectStore(BUCKET, ObjectStoreOptions.builder(DEFAULT_JS_OPTIONS).build()); // coverage;
+            nc.objectStore(BUCKET, ObjectStoreOptions.builder(defaultOptions()).build()); // coverage;
 
             validateStatus(os.getStatus());
 
@@ -271,10 +271,10 @@ public class ObjectStoreTests extends JetStreamTestBase {
     @Test
     public void testObjectStoreOptionsBuilderCoverage() {
         assertOso(ObjectStoreOptions.builder().build());
-        assertOso(ObjectStoreOptions.builder().jetStreamOptions(DEFAULT_JS_OPTIONS).build());
+        assertOso(ObjectStoreOptions.builder().jetStreamOptions(defaultOptions()).build());
         assertOso(ObjectStoreOptions.builder((ObjectStoreOptions) null).build());
         assertOso(ObjectStoreOptions.builder(ObjectStoreOptions.builder().build()).build());
-        assertOso(ObjectStoreOptions.builder(DEFAULT_JS_OPTIONS).build());
+        assertOso(ObjectStoreOptions.builder(defaultOptions()).build());
 
         ObjectStoreOptions oso = ObjectStoreOptions.builder().jsPrefix("prefix").build();
         assertEquals("prefix.", oso.getJetStreamOptions().getPrefix());
@@ -290,10 +290,10 @@ public class ObjectStoreTests extends JetStreamTestBase {
 
     private void assertOso(ObjectStoreOptions oso) {
         JetStreamOptions jso = oso.getJetStreamOptions();
-        assertEquals(JetStreamOptions.DEFAULT_JS_OPTIONS.getRequestTimeout(), jso.getRequestTimeout());
-        assertEquals(JetStreamOptions.DEFAULT_JS_OPTIONS.getPrefix(), jso.getPrefix());
-        assertEquals(JetStreamOptions.DEFAULT_JS_OPTIONS.isDefaultPrefix(), jso.isDefaultPrefix());
-        assertEquals(JetStreamOptions.DEFAULT_JS_OPTIONS.isPublishNoAck(), jso.isPublishNoAck());
+        assertEquals(defaultOptions().getRequestTimeout(), jso.getRequestTimeout());
+        assertEquals(defaultOptions().getPrefix(), jso.getPrefix());
+        assertEquals(defaultOptions().isDefaultPrefix(), jso.isDefaultPrefix());
+        assertEquals(defaultOptions().isPublishNoAck(), jso.isPublishNoAck());
     }
 
     @Test

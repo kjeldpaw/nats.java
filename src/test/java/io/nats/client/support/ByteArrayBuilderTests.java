@@ -9,12 +9,12 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import static io.nats.client.support.BuilderBase.ALLOCATION_BOUNDARY;
 import static io.nats.client.support.ByteArrayBuilder.DEFAULT_ASCII_ALLOCATION;
 import static io.nats.client.support.ByteArrayBuilder.DEFAULT_OTHER_ALLOCATION;
 import static io.nats.client.support.NatsConstants.*;
-import static io.nats.client.support.RandomUtils.PRAND;
 import static io.nats.client.utils.ResourceUtils.dataAsLines;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,8 +37,9 @@ public class ByteArrayBuilderTests {
         String expectedString = "";
         for (String testString : testStrings) {
             int loops = 1000 / testString.length();
+            Random random = RandomUtils.getRandom();
             for (int x = 1; x < loops; x++) {
-                String more = testString + PRAND.nextInt(Integer.MAX_VALUE);
+                String more = testString + random.nextInt(Integer.MAX_VALUE);
                 bab.append(more);
                 expectedString = expectedString + more;
                 byte[] bytes = bab.toByteArray();
@@ -52,8 +53,9 @@ public class ByteArrayBuilderTests {
         String expectedString = "";
         for (String testString : testStrings) {
             int loops = 1000 / testString.length();
+            Random random = RandomUtils.getRandom();
             for (int x = 1; x < loops; x++) {
-                String more = testString + PRAND.nextInt(Integer.MAX_VALUE);
+                String more = testString + random.nextInt(Integer.MAX_VALUE);
                 bab.append(more);
                 expectedString = expectedString + more;
                 byte[] bytes = bab.toByteArray();
